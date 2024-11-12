@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Function Graph Plotter</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+
+<h2>Advanced Function Graph Plotter</h2>
+
+<label>Enter Function (e.g., y = 2*x + 3):</label>
+<input type="text" id="expression" placeholder="y = 2*x + 3">
+<button onclick="addExpression()">Add Function</button>
+<br><br>
+
+<label>Enter x range (e.g., -10, 10):</label>
+<input type="text" id="range" placeholder="-10, 10">
+<button onclick="setRange()">Set Range</button>
+<br><br>
+
+<button onclick="plotGraphs()">Plot Graphs</button>
+
+<h3>Graph Output:</h3>
+<img id="plot" style="max-width:100%; height:auto;">
+
+<script>
+    async function addExpression() {
+        const expression = document.getElementById('expression').value;
+        const response = await fetch('/add_expression', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ expression })
+        });
+        const data = await response.json();
+        alert(data.message || data.error);
+    }
+
+    async function setRange() {
+        const range = document.getElementById('range').value;
+        const response = await fetch('/set_range', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ range })
+        });
+        const data = await response.json();
+        alert(data.message || data.error);
+    }
+
+    async function plotGraphs() {
+        const response = await fetch('/plot_graphs');
+        const data = await response.json();
+        if (data.image) {
+            document.getElementById('plot').src = `data:image/png;base64,${data.image}`;
+        } else {
+            alert(data.error);
+        }
+    }
+</script>
+
+</body>
+</html>
